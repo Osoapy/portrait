@@ -1,65 +1,24 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfólio de Bebel</title>
-    <link rel="stylesheet" href="styles/variables.css"/>
-    <link rel="stylesheet" href="styles/darkMode.css"/>
-    <link rel="stylesheet" href="styles/style.css"/>
-    <link rel="stylesheet" href="styles/header.css"/>
-    <link rel="stylesheet" href="styles/curriculo.css"/>
-    <link rel="icon" href="assets/icon.png"/>
-</head>
-<body>
-    <header>
-        <div class="headerLogoContainer">
-            <img class="headerLogo" src="./assets/icon.png" alt="Meu ícone">
-        </div>
-        <div class="navContainer">
-            <label  id="darkMode-container">
-                <input type="checkbox"/>
-                <span class="check"></span>
-            </label>
-            <nav>
-                <a href="#projetos">Projetos</a>
-                <a href="#documentos">Documentos</a>
-                <a href="#outros">Outros</a>
-                <a href="#curriculo">Currículo</a>
-            </nav>
-        </div>
-    </header>
-    <section id="projetos" class="content-section">
-        <div class="section-first-title-container">
-            <h1 class="section-first-title">♤ Projetos</h1>
-        </div>
-    </section>
-    <section id="documentos" class="content-section">
-        <div class="section-first-title-container">
-            <h1 class="section-first-title">♤ Documentos</h1>
-        </div>
-    </section>
-    <section id="outros" class="content-section">
-        <div class="section-first-title-container">
-            <h1 class="section-first-title">♤ Outros</h1>
-        </div>
-    </section>
-    <section id="curriculo" class="content-section">
-        <div class="section-first-title-container">
-            <h1 class="section-first-title">♤ Currículo</h1>
-        </div>
-        <div id="curriculoContainer" class="portfolio-box">
-            <div class="viewer">
-                <div class="arrow-overlay arrow-left"></div>
-                <img id="curriculoImage" src="./assets/curriculo/1.png" alt="Página do Currículo">
-                <div class="arrow-overlay arrow-right"></div>
-            </div>
-        </div>
-    </section>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12/dist/gsap.min.js" defer></script>
-    <script src="scripts/curriculo.js" defer></script>
-    <script src="scripts/script.js" defer></script>
-    <script src="scripts/darkMode.js" defer></script>
-    <!--<script src="scripts/gsapAnimation.js" type="module" defer></script>-->
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#86ce72" />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/mark.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <meta
+      name="description"
+      content="Portfólio e currículo de João Gabriel Vieira Silva. Desenvolvedor fullstack web e mobile."
+    />
+    <title>João Gabriel - Desenvolvedor fullstack</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
