@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "predeploy": "npm run build",
+    "predeploy": "gh-pages-clean && npm run build",
     "deploy": "gh-pages -d dist --nojekyll"
   },
   "dependencies": {
