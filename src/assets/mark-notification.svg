@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Marca de João Gabriel com notificação">
-  <circle cx="32" cy="32" r="14" fill="#fff" stroke="#000" stroke-width="1.5"/>
-  <path d="M32 18a14 14 0 0 1 14 14H32ZM32 46a14 14 0 0 1-14-14h14Z" fill="#000"/>
-  <path d="M32 2 40 20 32 18ZM62 32 44 24 46 32ZM32 62 24 44 32 46ZM2 32 20 40 18 32Z" fill="#000"/>
-  <circle cx="52" cy="12" r="10" fill="#d91524" stroke="#fff" stroke-width="3"/>
-</svg>

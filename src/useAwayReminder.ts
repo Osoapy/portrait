@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import normalIcon from "./assets/mark.svg";
-import notificationIcon from "./assets/mark-notification.svg";
+import normalIcon from "./assets/mark.png";
+import notificationIcon from "./assets/mark-notification.png";
 
 const IDLE_AFTER_MS = 45_000;
 const SESSION_KEY = "joao-portfolio-return-reminder-shown";

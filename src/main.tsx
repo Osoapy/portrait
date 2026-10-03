@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { createRoot } from "react-dom/client";
 import photo from "./assets/foto.png";
-import mark from "./assets/mark.svg";
+import mark from "./assets/mark.png";
 import { experience, highlights, profile } from "./data/profile";
 import { projects } from "./data/projects";
 import { skillVisuals, type SkillVisual } from "./data/skillVisuals";
