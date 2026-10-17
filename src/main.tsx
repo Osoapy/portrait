@@ -406,14 +406,14 @@ function App() {
     <div id="inicio" className="site">
       <header className="wallpaper">
         <div className="desktop-shortcuts">
-          <a href="#projetos">
-            <Folder label="meus arquivos" />
-          </a>
           <a href="#sobre">
             <span className="shortcut-portrait">
               <img src={photo} alt="" />
             </span>
             <span>joao.exe</span>
+          </a>
+          <a href="#projetos">
+            <Folder label="meus arquivos" />
           </a>
           <a href="#contato">
             <span className="mail-icon" aria-hidden="true">
