@@ -21,7 +21,6 @@ export const profile = {
       institution: "Mondragon Unibertsitatea, Espanha",
       period: "2026",
     },
-    { title: "Ensino Médio", institution: "Concluído", period: "2022" },
   ],
   languages: [
     "Português · nativo",
@@ -35,24 +34,19 @@ export const profile = {
         "React",
         "TypeScript",
         "CSS",
+        "SCSS",
         "Node.js",
-        "Flutter",
+        "JavaScript",
         "Dart",
-        "FlutterFlow",
-      ],
-    },
-    {
-      group: "Dados & IA",
-      items: [
+        "Flutter",
         "Python",
-        "Inteligência artificial",
-        "Redes neurais",
-        "Análise de dados",
+        "Kotlin",
+        "Lua",
       ],
     },
     {
-      group: "Outras ferramentas",
-      items: ["Figma", "Testes e automação", "ERP e XML", "Lua", "LÖVE2D"],
+      group: "Ferramentas",
+      items: ["Figma", "LÖVE2D", "VS Code", "VS", "IntelliJ", "FlutterFlow", "Obsidian", "Git", "GitHub", "Firebase"],
     },
   ],
 };
@@ -103,6 +97,8 @@ export const experience = [
 ];
 
 export const highlights = [
+  "Capacitação em Tecnologia da Interação: Parceria do SENAC e Pisada do Sertão",
+  "Capacitação em Sistemas Embarcados e Edge AI: Parceria do PNAAT e Ministério da Ciência, Tecnologia e Inovação",
   "Monitor voluntário de Algoritmos e Lógica de Programação",
   "Professor do minicurso Desvendando Lua: do básico às APIs",
   "2º lugar no Ideathon Startup Day 2026 · Sebrae Startups",

@@ -20,7 +20,9 @@ a {
   color: #0000aa;
 }
 a:focus-visible,
-button:focus-visible {
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
   outline: 2px dashed #0d41d2;
   outline-offset: 3px;
 }
@@ -40,9 +42,9 @@ button:focus-visible {
   min-height: 390px;
   position: relative;
   overflow: hidden;
-  background: #32898d url("./assets/retro-landscape.svg") center / cover
+  background: #32898d url("./assets/xp-bliss.jpg") center / cover
     no-repeat;
-  image-rendering: pixelated;
+  image-rendering: auto;
 }
 .wallpaper::before {
   content: "";
@@ -51,7 +53,7 @@ button:focus-visible {
   background:
     repeating-linear-gradient(0deg, #050f12 0 1px, transparent 1px 4px),
     repeating-linear-gradient(90deg, #e8f4d7 0 1px, transparent 1px 5px);
-  opacity: 0.12;
+  opacity: 0.035;
   pointer-events: none;
 }
 .wallpaper::after {
@@ -65,14 +67,6 @@ button:focus-visible {
     transparent 100%
   );
   pointer-events: none;
-}
-.wallpaper-grain {
-  position: absolute;
-  inset: 0;
-  background: url("./assets/retro-landscape.svg") center / 42% 42%;
-  opacity: 0.1;
-  filter: contrast(220%);
-  mix-blend-mode: multiply;
 }
 .desktop-shortcuts {
   position: absolute;
@@ -114,11 +108,11 @@ button:focus-visible {
   width: 45px;
   height: 31px;
   margin-top: 8px;
-  background: linear-gradient(#ffe38b 0 22%, #ecb83d 22% 34%, #e8bd4a 34% 100%);
-  border: 1px solid #885f13;
+  background: linear-gradient(180deg, #ffe7a0, #f2c65e);
+  border: 1px solid #aa7b28;
   box-shadow:
-    inset 2px 2px #fff1a6,
-    inset -2px -2px #c38d2f,
+    inset 2px 2px #fff2c2,
+    inset -2px -2px #d5a23c,
     2px 2px #182a2490;
   image-rendering: pixelated;
 }
@@ -129,8 +123,8 @@ button:focus-visible {
   left: -1px;
   width: 19px;
   height: 8px;
-  background: #eebc49;
-  border: 1px solid #885f13;
+  background: #e9bb55;
+  border: 1px solid #aa7b28;
   border-bottom: 0;
 }
 .shortcut-portrait {
@@ -270,8 +264,8 @@ button:focus-visible {
   margin: auto;
   padding: 80px 5% 85px;
   display: grid;
-  grid-template-columns: 47% 53%;
-  gap: 1%;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 6%;
 }
 .about-text {
   padding-top: 5px;
@@ -309,7 +303,7 @@ button:focus-visible {
   max-width: 505px;
   margin: 0 0 9px;
   font:
-    14px/1.45 "Times New Roman",
+    16px/1.6 "Times New Roman",
     serif;
 }
 .about-text h3 {
@@ -352,13 +346,14 @@ button:focus-visible {
   margin-left: 2%;
 }
 .titlebar {
-  background: #030578;
+  background: linear-gradient(180deg, #467bd4 0%, #3269c4 18%, #2b5fba 80%, #2857a8 100%);
+  box-shadow: inset 0 1px 0 #8cabdf;
   height: 26px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   color: white;
-  padding: 0 3px 0 5px;
+  padding: 0 3px 0 8px;
   border-bottom: 1px solid #777;
   font:
     bold 13px Tahoma,
@@ -367,52 +362,21 @@ button:focus-visible {
   user-select: none;
   -webkit-user-select: none;
 }
-.title-controls {
-  display: flex;
-  gap: 2px;
-}
-.title-controls i {
-  position: relative;
-  width: 18px;
-  height: 17px;
-  background: #d3d3d3;
-  border: 1px outset white;
-}
-.control-minimize::before,
-.control-maximize::before,
-.control-close::before,
-.control-close::after {
-  content: "";
-  position: absolute;
-  background: #111;
-}
-.control-minimize::before {
-  width: 9px;
-  height: 2px;
-  left: 3px;
-  bottom: 3px;
-}
-.control-maximize::before {
-  width: 9px;
-  height: 8px;
-  left: 3px;
-  top: 3px;
+.title-controls { display: flex; align-items: center; gap: 1px; }
+.title-controls button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  color: #fff;
   background: transparent;
-  border: 2px solid #111;
 }
-.control-close::before,
-.control-close::after {
-  width: 11px;
-  height: 2px;
-  left: 2px;
-  top: 7px;
-}
-.control-close::before {
-  transform: rotate(45deg);
-}
-.control-close::after {
-  transform: rotate(-45deg);
-}
+.title-controls svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.title-controls button:hover { background: #ffffff25; }
+.title-controls .window-close:hover { background: #b52c27; }
+.title-controls button:focus-visible { outline-color: white; outline-offset: -3px; }
 .photo-window img {
   width: calc(100% - 16px);
   height: 335px;
@@ -437,7 +401,7 @@ button:focus-visible {
   left: 33%;
   width: 270px;
 }
-.social-window > div:last-child {
+.social-window .window-content > div {
   padding: 10px 12px 14px;
   display: grid;
   gap: 8px;
@@ -456,9 +420,9 @@ button:focus-visible {
 
 .window-divider {
   height: 35px;
-  background: #c4c4c4;
-  border-top: 2px solid #888;
-  border-bottom: 2px solid #aaa;
+  background: #e6e5df;
+  border-top: 1px solid #b6b6af;
+  border-bottom: 1px solid #b6b6af;
   box-shadow: inset 0 2px white;
   display: flex;
   align-items: stretch;
@@ -472,16 +436,14 @@ button:focus-visible {
   display: flex;
   align-items: center;
   padding: 0 22px;
-  min-width: 145px;
-  background: #dedede;
-  border-right: 2px ridge #fff;
+  background: transparent;
+  border-right: 1px solid #b6b6af;
   user-select: none;
   -webkit-user-select: none;
 }
 .window-divider span:last-child {
-  border-left: 2px ridge #fff;
   border-right: 0;
-  background: #cecece;
+  color: #575951;
 }
 
 .experience {
@@ -489,8 +451,8 @@ button:focus-visible {
   margin: auto;
   padding: 100px 5% 110px;
   display: grid;
-  grid-template-columns: 32% minmax(0, 1fr);
-  gap: 10%;
+  grid-template-columns: minmax(0, 1fr) 35%;
+  gap: 8%;
 }
 .section-code {
   display: block;
@@ -557,7 +519,7 @@ button:focus-visible {
 }
 .job p {
   font:
-    13px/1.4 "Times New Roman",
+    15px/1.55 "Times New Roman",
     serif;
   margin: 6px 0 0;
   max-width: 580px;
@@ -570,7 +532,7 @@ button:focus-visible {
 }
 .explorer {
   display: grid;
-  grid-template-columns: 48% 52%;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 3%;
   min-height: 580px;
 }
@@ -654,7 +616,7 @@ button:focus-visible {
   margin: auto;
   padding: 85px 5% 100px;
   display: grid;
-  grid-template-columns: 60% 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 5%;
 }
 .contact p {
@@ -727,8 +689,8 @@ button:focus-visible {
 
 .skill-groups {
   display: grid;
-  gap: 12px;
-  margin: 0 0 20px;
+  gap: 10px;
+  margin: 0 0 16px;
 }
 .skill-group h4 {
   margin: 0 0 5px;
@@ -740,27 +702,29 @@ button:focus-visible {
 .skill-group > div {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px 13px;
+  gap: 6px;
 }
 .skill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  min-height: 21px;
+  gap: 6px;
+  min-height: 28px;
   max-width: 100%;
+  padding: 4px 7px;
+  background: #f4f3ed;
+  border: 1px solid #bbbcb6;
+  border-left: 3px solid var(--skill-from);
+  box-shadow: inset 0 1px #fff, 1px 1px 0 #deded7;
 }
 .skill img {
-  flex: 0 0 18px;
+  flex: 0 0 16px;
   display: block;
+  object-fit: contain;
 }
+.skill img.flutterflow-icon { mix-blend-mode: multiply; }
 .skill-name {
-  font:
-    bold 12px Tahoma,
-    sans-serif;
-  background: linear-gradient(90deg, var(--skill-from), var(--skill-to));
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
+  font: 11px/1.25 Tahoma, sans-serif;
+  color: #24283a;
 }
 
 .about-windows {
@@ -781,7 +745,7 @@ button:focus-visible {
 }
 
 .explorer {
-  grid-template-columns: 48% 52%;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   min-height: 425px;
 }
 .explorer-title span {
@@ -822,8 +786,8 @@ button:focus-visible {
 }
 .project-detail a {
   font:
-    bold 13px Tahoma,
-    sans-serif;
+    14px/1.35 "Times New Roman",
+    serif;
   text-decoration: underline;
 }
 .project-detail small {
@@ -847,8 +811,8 @@ button:focus-visible {
 }
 
 .education {
-  grid-template-columns: 35% 1fr;
-  gap: 7%;
+  grid-template-columns: minmax(0, 1fr) 35%;
+  gap: 8%;
 }
 .education-list {
   margin-top: 0;
@@ -869,7 +833,7 @@ button:focus-visible {
   border-bottom: 1px dotted #999;
   position: relative;
   font:
-    13px/1.4 "Times New Roman",
+    15px/1.55 "Times New Roman",
     serif;
 }
 .education-extras li::before {
@@ -909,7 +873,8 @@ button:focus-visible {
   gap: 7px;
   padding: 2px 4px 2px 8px;
   color: white;
-  background: linear-gradient(90deg, #0648ab, #4da4ed 72%, #1168d1);
+  background: linear-gradient(180deg, #467bd4 0%, #3269c4 18%, #2b5fba 80%, #2857a8 100%);
+  box-shadow: inset 0 1px 0 #8cabdf;
   font-size: 12px;
   text-shadow: 1px 1px #123e78;
   user-select: none;
@@ -934,15 +899,15 @@ button:focus-visible {
   position: absolute;
   width: 12px;
   height: 2px;
-  left: 4px;
-  top: 8px;
+  left: 50%;
+  top: 50%;
   background: white;
 }
 .return-titlebar button::before {
-  transform: rotate(45deg);
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 .return-titlebar button::after {
-  transform: rotate(-45deg);
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
 .return-body {
   display: flex;
@@ -1004,6 +969,89 @@ button:focus-visible {
     sans-serif;
 }
 
+/* Shared spacing and window details keep the desktop metaphor consistent. */
+.page-section > *, .explorer > * { min-width: 0; }
+.experience > .section-side, .education > .section-side {
+  grid-column: 2;
+  grid-row: 1;
+}
+.experience > .jobs, .education > .jobs {
+  grid-column: 1;
+  grid-row: 1;
+}
+.section-side h2, .education h2, .contact h2 {
+  letter-spacing: -0.065em;
+  font-size: clamp(52px, 5.6vw, 82px);
+  line-height: 0.98;
+}
+.section-side > p { line-height: 1.5; }
+.job { padding: 20px 0; }
+.job-title { flex-wrap: wrap; gap: 6px 12px; }
+.folder-list button { border-radius: 2px; }
+.folder-list button.folder-selected {
+  border: 1px dotted #183877;
+  background: #dbe4f1;
+}
+.contact p { line-height: 1.5; }
+.contact .email-link { font-size: clamp(18px, 2.1vw, 26px); }
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-top: 26px;
+  font: 12px/1.5 Tahoma, sans-serif;
+}
+.contact-compose {
+  align-self: start;
+  background: #e8e7df;
+  border: 1px solid #777b80;
+  padding: 0;
+  box-shadow: inset 1px 1px #fff, inset -1px -1px #aaa, 4px 4px 0 #22222212;
+  font: 13px/1.5 Tahoma, sans-serif;
+}
+.compose-recipient {
+  padding: 12px 14px;
+  border-bottom: 1px solid #c1c1b7;
+  overflow-wrap: anywhere;
+}
+.compose-recipient span { color: #5b5d65; margin-right: 12px; }
+.contact-compose form { padding: 16px; }
+.contact-compose fieldset { padding: 0; margin: 0; border: 0; min-width: 0; }
+.contact-compose label { display: block; margin: 0 0 5px; }
+.contact-compose input:not([type="hidden"]), .contact-compose textarea {
+  display: block;
+  width: 100%;
+  min-height: 40px;
+  padding: 10px;
+  margin-bottom: 16px;
+  border: 1px solid #93989b;
+  border-radius: 0;
+  box-shadow: inset 1px 1px 0 #deded7;
+  background: #fffefa;
+  color: #24283a;
+  font: inherit;
+}
+.contact-compose textarea { resize: vertical; }
+.contact-compose .form-trap { display: none !important; }
+.send-button {
+  min-height: 40px;
+  padding: 9px 18px;
+  background: linear-gradient(#ededeb, #c9c9c5);
+  color: #222;
+  border: 1px solid;
+  border-color: #fff #777 #777 #fff;
+  box-shadow: 1px 1px 0 #777;
+  font: bold 12px Tahoma, sans-serif;
+}
+.send-button:hover { background: #e8e8e3; }
+.send-button:active { box-shadow: inset 1px 1px #777; }
+.send-button:disabled { opacity: 0.65; cursor: wait; }
+.form-feedback:not(:empty) { margin-top: 16px; padding-top: 12px; border-top: 1px solid #b9bbb3; }
+@media (max-width: 700px) {
+  .contact-compose { margin-top: 32px; }
+  .window-divider span { padding: 0 14px; }
+}
+
 @media (max-width: 950px) {
   .taskbar {
     overflow-x: auto;
@@ -1021,7 +1069,7 @@ button:focus-visible {
     padding-right: 20px;
   }
   .explorer {
-    grid-template-columns: 46% 54%;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
   .explorer-title strong {
     font-size: clamp(58px, 7vw, 90px);
@@ -1202,7 +1250,7 @@ button:focus-visible {
   .window-divider,
   .footer,
   .folder-list,
-  .contact-note,
+  .contact-compose,
   .reminder-overlay {
     display: none !important;
   }
@@ -1240,4 +1288,132 @@ button:focus-visible {
   .explorer-intro > p {
     margin: 10px 0;
   }
+}
+
+/* Native dialogs retain form fields and provide modal focus handling. */
+.window-shell {
+  position: static;
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: inherit;
+  font: inherit;
+}
+.window-content[hidden] { display: none; }
+.window-shell.is-maximized {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  max-width: 100%;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  background: #d6d6d0;
+  display: flex;
+  flex-direction: column;
+  border: 2px outset #eee;
+}
+.window-shell.is-maximized > .titlebar { flex-shrink: 0; }
+.window-shell.is-maximized > .window-content { overflow: auto; flex: 1; }
+.window-shell::backdrop { background: #081c3b80; }
+.photo-window .is-maximized img { height: calc(100dvh - 85px); object-fit: contain; }
+.contact-compose .is-maximized .window-content { width: min(760px, 100%); margin: 0 auto; }
+.window-error {
+  width: min(440px, calc(100% - 28px));
+  position: fixed;
+  inset: auto;
+  left: calc(8px + (100vw - min(440px, 100vw - 28px) - 16px) * var(--error-x));
+  top: calc(8px + (100dvh - 250px) * var(--error-y));
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+  border: 2px outset #eee;
+  background: #deded8;
+  color: #222;
+  box-shadow: 5px 5px 0 #0003;
+  font: 13px/1.5 Tahoma, sans-serif;
+}
+.error-message { display: flex; gap: 16px; padding: 22px 18px 12px; }
+.error-message h2 { margin: 0 0 8px; font: bold 14px/1.4 Tahoma, sans-serif; }
+.error-message p { margin: 0; font: 13px/1.5 Tahoma, sans-serif; }
+.error-symbol { flex: 0 0 32px; width: 32px; height: 32px; }
+.error-actions { padding: 8px 18px 16px; text-align: right; }
+.window-error::backdrop { background: transparent; pointer-events: none; }
+.social-icon { display: inline-block; flex: 0 0 18px; vertical-align: middle; object-fit: contain; }
+.social-window a, .contact-links a, .phone a { display: inline-flex; align-items: center; gap: 8px; }
+@media print { .window-error { display: none !important; } }
+.window-error .send-button { min-width: 85px; }
+
+/* Compact social marks; retain readable link labels. */
+.social-window .social-icon {
+  width: 14px;
+  height: 14px;
+  flex-basis: 14px;
+}
+
+@media (max-width: 1024px) {
+  .wallpaper {
+    height: clamp(240px, 40vw, 360px);
+    min-height: 0;
+  }
+  .desktop-shortcuts,
+  .wallpaper-title .year,
+  .wallpaper-title p,
+  .wallpaper-version { display: none; }
+  .wallpaper-title { top: 50%; padding: 0 20px; }
+  .wallpaper-title h1 {
+    font-size: clamp(32px, 5.5vw, 54px);
+    line-height: 1;
+    text-shadow: 2px 2px 0 #111a12bd;
+  }
+  .taskbar { gap: 4px; scroll-padding-inline: 6px; }
+  .taskbar a { min-height: 44px; padding-inline: 14px; }
+  .taskbar .task-print { order: 0; margin-left: 0; }
+  .task-time { display: none; }
+  .page-section { scroll-margin-top: 60px; }
+  .titlebar { height: 44px; }
+  .title-controls button { width: 44px; height: 42px; }
+  .social-window a { min-height: 44px; overflow-wrap: anywhere; }
+  .social-window .window-content > div { gap: 0; }
+  .contact-compose input:not([type="hidden"]),
+  .contact-compose textarea { font-size: 16px; }
+  .send-button, .return-actions a, .return-actions button { min-height: 44px; }
+  .return-titlebar { height: 44px; }
+  .return-titlebar button { width: 40px; height: 38px; flex-shrink: 0; }
+  .contact-links a, .phone a { min-height: 44px; }
+  .contact-links { gap: 4px 20px; margin-top: 16px; }
+  .photo-window .is-maximized img { height: calc(100dvh - 100px); }
+  .window-shell.is-maximized > .window-content { overscroll-behavior: contain; }
+}
+
+@media (min-width: 701px) and (max-width: 1024px) {
+  .about, .experience, .education, .contact { gap: 5%; padding: 56px 5%; }
+  .about-windows { padding: 0; }
+  .experience, .education { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .contact { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .contact-compose { width: 100%; max-width: 680px; }
+  .section-side h2, .education h2, .contact h2 { font-size: clamp(44px, 6vw, 60px); }
+  .projects { padding: 56px 5%; }
+}
+
+@media (max-width: 700px) {
+  .about, .experience, .education, .contact, .projects { padding: 48px 6%; }
+  .photo-window, .social-window { width: min(350px, 100%); }
+  .section-side h2, .education h2, .contact h2 { font-size: clamp(42px, 9vw, 60px); }
+  .explorer-title strong { font-size: clamp(56px, 12vw, 80px); }
+  .explorer-title small { left: auto; right: 0; }
+  .folder-list { gap: 12px 8px; padding-top: 0; }
+  .folder-list .folder-wrap { font-size: 11px; }
+  .project-detail p, .project-detail a { font-size: 16px; line-height: 1.5; }
+  .project-detail a { display: inline-flex; align-items: center; min-height: 44px; }
+  .contact-compose form { padding: 14px; }
+  .contact-compose .send-button { width: 100%; }
+  .footer { flex-wrap: wrap; align-items: center; }
+  .footer a { display: inline-flex; align-items: center; min-height: 44px; }
 }

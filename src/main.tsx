@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { createRoot } from "react-dom/client";
 import photo from "./assets/foto.png";
 import mark from "./assets/mark.png";
@@ -15,6 +16,11 @@ const tabs = [
   { href: "#formacao", label: "formação" },
   { href: "#contato", label: "contato" },
 ];
+function SocialIcon({ name }: { name: "github" | "gmail" | "linkedin" | "whatsapp" }) {
+  return <img className="social-icon" src={new URL(`./assets/social/${name}.svg`, import.meta.url).href} alt="" width="18" height="18" />;
+}
+
+const whatsappUrl = `https://wa.me/${profile.phone.replace(/\D/g, "")}?text=${encodeURIComponent("Olá, João! Vi seu portfólio e gostaria de conversar sobre um projeto ou oportunidade.")}`;
 const curriculumUrl = "https://osoapy.github.io/my-curriculum/";
 
 function Folder({ label }: { label: string }) {
@@ -26,17 +32,115 @@ function Folder({ label }: { label: string }) {
   );
 }
 
-function Titlebar({ title }: { title: string }) {
+function RetroWindow({ title, className, children }: {
+  title: string; className: string; children: React.ReactNode;
+}) {
+  const shellRef = useRef<HTMLDialogElement>(null);
+  const maximizeRef = useRef<HTMLButtonElement>(null);
+  const [minimized, setMinimized] = useState(false);
+  const [maximized, setMaximized] = useState(false);
+
+  useEffect(() => { shellRef.current?.show(); }, []);
+  useEffect(() => {
+    if (!maximized) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = previous; };
+  }, [maximized]);
+
+  function restore() {
+    const dialog = shellRef.current!;
+    dialog.close();
+    dialog.show();
+    setMaximized(false);
+    maximizeRef.current?.focus({ preventScroll: true });
+  }
+  function maximize() {
+    if (maximized) { restore(); return; }
+    setMinimized(false);
+    const dialog = shellRef.current!;
+    dialog.close();
+    dialog.showModal();
+    setMaximized(true);
+  }
+  function minimize() {
+    if (maximized) restore();
+    setMinimized(value => !value);
+  }
+
   return (
-    <div className="titlebar">
-      <span>▣ &nbsp; {title}</span>
-      <span className="title-controls" aria-hidden="true">
-        <i className="control-minimize" />
-        <i className="control-maximize" />
-        <i className="control-close" />
-      </span>
+    <div className={`${className} retro-window`}>
+      <dialog ref={shellRef} className={`window-shell${maximized ? " is-maximized" : ""}`}
+        aria-label={title} onCancel={event => { event.preventDefault(); restore(); }}>
+        <div className="titlebar">
+          <span>{title}</span>
+          <div className="title-controls">
+            <button type="button" aria-label={`${minimized ? "Restaurar" : "Minimizar"} ${title}`} aria-expanded={!minimized} onClick={minimize}>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 12.5h10" /></svg>
+            </button>
+            <button type="button" ref={maximizeRef} aria-label={`${maximized ? "Sair da tela cheia de" : "Maximizar"} ${title}`} onClick={maximize}>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="3.5" width="9" height="9" /></svg>
+            </button>
+            <button type="button" className="window-close" aria-label={`Fechar ${title}`} onClick={() => {
+              if (maximized) { restore(); return; }
+              window.dispatchEvent(new CustomEvent("portfolio-error", { detail: title }));
+            }}>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 3.5 9 9m0-9-9 9" /></svg>
+            </button>
+          </div>
+        </div>
+        <div className="window-content" hidden={minimized}>{children}</div>
+      </dialog>
+
     </div>
   );
+}
+
+type WindowError = { id: number; title: string };
+
+function ErrorWindow({ error, onClose }: { error: WindowError; onClose: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => { ref.current?.showPopover(); }, []);
+  // Bounce across each axis to form a repeating zigzag, keeping the whole window on screen.
+  const bounce = (step: number, period: number) => 1 - Math.abs((step % period) / (period / 2) - 1);
+  const style = {
+    "--error-x": bounce(error.id + 3, 16),
+    "--error-y": bounce(error.id + 2, 10),
+  } as CSSProperties;
+  return createPortal(
+    <div ref={ref} popover="manual" className="window-error" role="dialog"
+      aria-label={`Erro ao fechar ${error.title}`} style={style}
+      onKeyDown={event => { if (event.key === "Escape") { event.stopPropagation(); onClose(); } }}>
+      <div className="titlebar"><span>Erro do sistema</span><div className="title-controls">
+        <button type="button" className="window-close" aria-label="Fechar erro" onClick={onClose}>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3.5 3.5 9 9m0-9-9 9" /></svg>
+        </button>
+      </div></div>
+      <div className="error-message">
+        <svg className="error-symbol" viewBox="0 0 32 32" aria-hidden="true">
+          <circle cx="16" cy="16" r="14" fill="#c62b25" stroke="#801b17" strokeWidth="2" />
+          <path d="m10 10 12 12m0-12L10 22" stroke="white" strokeWidth="4" />
+        </svg>
+        <div><h2>Não foi possível fechar {error.title}.</h2><p>Esta janela faz parte do meu portfólio. Você pode minimizá-la ou continuar explorando!</p></div>
+      </div>
+      <div className="error-actions"><button type="button" className="send-button" onClick={onClose}>OK</button></div>
+    </div>, document.body,
+  );
+}
+
+function ErrorStack() {
+  const [errors, setErrors] = useState<WindowError[]>([]);
+  const nextId = useRef(0);
+  useEffect(() => {
+    const addError = (event: Event) => {
+      const error = { id: nextId.current++, title: (event as CustomEvent<string>).detail };
+      setErrors(current => [...current, error]);
+    };
+    window.addEventListener("portfolio-error", addError);
+    return () => window.removeEventListener("portfolio-error", addError);
+  }, []);
+  return errors.map(error => <ErrorWindow key={error.id} error={error}
+    onClose={() => setErrors(current => current.filter(item => item.id !== error.id))} />);
 }
 
 function External({
@@ -54,17 +158,14 @@ function External({
 }
 
 function Skill({ name }: { name: string }) {
-  const visual: SkillVisual = skillVisuals[name] ?? {
-    from: "#333",
-    to: "#666",
-  };
+  const visual: SkillVisual = skillVisuals[name];
   const colors = {
     "--skill-from": visual.from,
     "--skill-to": visual.to,
   } as CSSProperties;
   return (
     <span className="skill" style={colors}>
-      <img src={visual.icon ?? mark} alt="" width="18" height="18" />
+      <img className={name === "FlutterFlow" ? "flutterflow-icon" : undefined} src={visual.icon} alt="" width="16" height="16" />
       <span className="skill-name">{name}</span>
     </span>
   );
@@ -90,7 +191,7 @@ function Taskbar() {
         rel="noopener noreferrer"
         title="Abrir meu currículo em outra aba"
       >
-        CURRÍCULO / PDF
+        CURRÍCULO / PDF ↗
       </a>
       <time className="task-time" dateTime={time.toISOString()}>
         {time.toLocaleDateString("pt-BR", {
@@ -154,7 +255,7 @@ function ReturnReminder({ onClose }: { onClose: () => void }) {
       >
         <header className="return-titlebar">
           <img src={mark} alt="" width="16" height="16" />
-          <b>Mensagem do sistema</b>
+          <b>Uma mensagem para você</b>
           <button ref={closeRef} onClick={onClose} aria-label="Fechar aviso">
           </button>
         </header>
@@ -163,14 +264,17 @@ function ReturnReminder({ onClose }: { onClose: () => void }) {
           <div>
             <h2 id="return-title">Você voltou!</h2>
             <p>
-              Gostou de algum projeto? Mande uma mensagem para João Gabriel. A
-              conversa pode começar por aqui.
+              Gostou de algum projeto? Entre em contato comigo!
+              Vou adorar saber da sua ideia.
             </p>
           </div>
         </div>
         <div className="return-actions">
           <button onClick={onClose}>Agora não</button>
-          <a href={`mailto:${profile.email}`} onClick={onClose}>
+          <a href="#contato" onClick={() => {
+            onClose();
+            window.setTimeout(() => document.getElementById("contact-name")?.focus({ preventScroll: true }), 0);
+          }}>
             Entrar em contato
           </a>
         </div>
@@ -228,6 +332,66 @@ function ProjectExplorer() {
   );
 }
 
+function ContactForm() {
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const sendingRef = useRef(false);
+
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (sendingRef.current) return;
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    if (data.get("_honey")) return;
+    sendingRef.current = true;
+    setStatus("sending");
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 20000);
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${profile.email}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(Object.fromEntries(data)),
+        signal: controller.signal,
+      });
+      const result = await response.json();
+      if (!response.ok || !(result.success === true || result.success === "true")) {
+        throw new Error("Não foi possível enviar");
+      }
+      setStatus("success");
+      form.reset();
+    } catch {
+      setStatus("error");
+    } finally {
+      window.clearTimeout(timeout);
+      sendingRef.current = false;
+    }
+  }
+
+  return (
+    <RetroWindow className="contact-compose" title="Nova mensagem">
+      <div className="compose-recipient"><span>Para</span> {profile.email}</div>
+      <form onSubmit={submit} aria-label="Enviar mensagem" aria-busy={status === "sending"}>
+        <input type="hidden" name="_subject" value="Novo contato pelo portfólio" />
+        <input type="hidden" name="_template" value="table" />
+        <input className="form-trap" type="text" name="_honey" tabIndex={-1} autoComplete="off" aria-hidden="true" />
+        <fieldset disabled={status === "sending"}>
+          <label htmlFor="contact-name">Seu nome</label>
+          <input id="contact-name" name="name" autoComplete="name" required maxLength={100} placeholder="Como posso te chamar?" />
+          <label htmlFor="contact-email">Seu e-mail</label>
+          <input id="contact-email" name="email" type="email" autoComplete="email" required maxLength={254} placeholder="voce@exemplo.com" />
+          <label htmlFor="contact-message">Mensagem</label>
+          <textarea id="contact-message" name="message" required minLength={10} maxLength={5000} rows={5} placeholder="Me conte sobre sua ideia ou oportunidade…" />
+          <button className="send-button" type="submit">{status === "sending" ? "Enviando…" : "Enviar mensagem ↗"}</button>
+        </fieldset>
+        <div className="form-feedback" role="status" aria-live="polite">
+          {status === "success" && "Mensagem encaminhada! Obrigado por entrar em contato."}
+          {status === "error" && <>Não consegui confirmar o envio. Sua mensagem continua aqui para tentar novamente. Você também pode <a href={`mailto:${profile.email}`} target="_blank" rel="noopener noreferrer">me escrever por e-mail</a>.</>}
+        </div>
+      </form>
+    </RetroWindow>
+  );
+}
+
 function App() {
   const { showReminder, closeReminder } = useAwayReminder();
   useEffect(() => {
@@ -241,7 +405,6 @@ function App() {
   return (
     <div id="inicio" className="site">
       <header className="wallpaper">
-        <div className="wallpaper-grain" aria-hidden="true" />
         <div className="desktop-shortcuts">
           <a href="#projetos">
             <Folder label="meus arquivos" />
@@ -265,7 +428,7 @@ function App() {
           <p>por João Gabriel Vieira Silva</p>
         </div>
         <span className="wallpaper-version">
-          edição pessoal &nbsp; / &nbsp; v. 01
+          versão 1.6.43+61
         </span>
       </header>
 
@@ -293,41 +456,34 @@ function App() {
                 </div>
               ))}
             </div>
-            <a className="old-link" href="#formacao">
-              FORMAÇÃO ACADÊMICA ↓
-            </a>
-            <p className="tiny-note">
-              Formação no IFPB e intercâmbio acadêmico na Espanha.
-            </p>
           </div>
           <div className="about-windows">
-            <div className="photo-window">
-              <Titlebar title="MEET-JOAO" />
+            <RetroWindow className="photo-window" title="MEET-JOAO">
               <img src={photo} alt="Foto de João Gabriel" />
               <div className="window-status">
                 joao_gabriel.png &nbsp; • &nbsp; 100%
               </div>
-            </div>
-            <div className="social-window">
-              <Titlebar title="SOCIALS" />
+            </RetroWindow>
+            <RetroWindow className="social-window" title="SOCIALS">
               <div>
                 <External href={profile.github}>
-                  ◉ &nbsp; github.com/Osoapy ↗
+                  <SocialIcon name="github" /> github.com/Osoapy ↗
                 </External>
                 <External href={profile.linkedin}>
-                  in &nbsp; LinkedIn / João Gabriel ↗
+                  <SocialIcon name="linkedin" /> LinkedIn / João Gabriel ↗
                 </External>
-                <a href={`mailto:${profile.email}`}>
-                  ✉ &nbsp; enviar e-mail ↗
+                <a href={`mailto:${profile.email}`} target="_blank" rel="noopener noreferrer">
+                  <SocialIcon name="gmail" /> enviar e-mail ↗
                 </a>
+                <External href={whatsappUrl}><SocialIcon name="whatsapp" /> conversar no WhatsApp ↗</External>
               </div>
-            </div>
+            </RetroWindow>
           </div>
         </section>
 
         <div className="window-divider">
           <span>curriculo.doc</span>
-          <span>▣ &nbsp; página 1 de 3</span>
+          <span>experiência profissional</span>
         </div>
 
         <section id="experiencia" className="experience page-section">
@@ -359,7 +515,7 @@ function App() {
 
         <div className="window-divider">
           <span>projetos.exe</span>
-          <span>▣ &nbsp; {projects.length} arquivos</span>
+          <span>{projects.length} projetos</span>
         </div>
 
         <section id="projetos" className="projects page-section">
@@ -368,7 +524,7 @@ function App() {
 
         <div className="window-divider">
           <span>formacao.txt</span>
-          <span>▣ &nbsp; somente leitura</span>
+          <span>formação & conquistas</span>
         </div>
 
         <section id="formacao" className="education page-section">
@@ -406,7 +562,7 @@ function App() {
 
         <div className="window-divider">
           <span>mensagem.msg</span>
-          <span>▣ &nbsp; pronto para enviar</span>
+          <span>vamos conversar</span>
         </div>
 
         <section id="contato" className="contact page-section">
@@ -418,28 +574,27 @@ function App() {
               <em>conversar?</em>
             </h2>
             <p>Para projetos, oportunidades ou só para trocar ideias:</p>
-            <a className="email-link" href={`mailto:${profile.email}`}>
+            <a className="email-link" href={`mailto:${profile.email}`} target="_blank" rel="noopener noreferrer">
               {profile.email}
             </a>
-            <p className="phone">{profile.phone}</p>
-          </div>
-          <div className="contact-note">
-            <Titlebar title="atalhos.url" />
-            <div>
+            <p className="phone"><External href={whatsappUrl}>{profile.phone} · WhatsApp ↗</External></p>
+            <div className="contact-links">
               <External href={profile.github}>GitHub ↗</External>
               <External href={profile.linkedin}>LinkedIn ↗</External>
-              <External href={curriculumUrl}>CURRÍCULO / PDF ↗</External>
+              <External href={curriculumUrl}>Currículo / PDF ↗</External>
             </div>
           </div>
+          <ContactForm />
         </section>
       </main>
       <footer className="footer">
         <span>
           © {new Date().getFullYear()} {profile.name}
         </span>
-        <span>aprendendo a ser a mundança</span>
+        <span>aprendendo a ser a mudança</span>
         <a href="#inicio">↑ voltar ao topo</a>
       </footer>
+      <ErrorStack />
       {showReminder && <ReturnReminder onClose={closeReminder} />}
     </div>
   );
