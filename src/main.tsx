@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { createRoot } from "react-dom/client";
 import photo from "./assets/foto.png";
@@ -37,31 +37,44 @@ function RetroWindow({ title, className, children }: {
 }) {
   const shellRef = useRef<HTMLDialogElement>(null);
   const maximizeRef = useRef<HTMLButtonElement>(null);
+  const scrollPositionRef = useRef({ x: 0, y: 0 });
   const [minimized, setMinimized] = useState(false);
   const [maximized, setMaximized] = useState(false);
 
-  useEffect(() => { shellRef.current?.show(); }, []);
-  useEffect(() => {
+  function restoreScroll() {
+    const root = document.documentElement;
+    const previousBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    window.scrollTo(scrollPositionRef.current.x, scrollPositionRef.current.y);
+    root.style.scrollBehavior = previousBehavior;
+  }
+
+  useLayoutEffect(() => {
     if (!maximized) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = previous; };
+    return () => {
+      document.body.style.overflow = previous;
+      restoreScroll();
+    };
   }, [maximized]);
 
   function restore() {
     const dialog = shellRef.current!;
     dialog.close();
-    dialog.show();
+    dialog.open = true;
     setMaximized(false);
     maximizeRef.current?.focus({ preventScroll: true });
   }
   function maximize() {
     if (maximized) { restore(); return; }
-    setMinimized(false);
+    if (minimized) { setMinimized(false); return; }
+    scrollPositionRef.current = { x: window.scrollX, y: window.scrollY };
     const dialog = shellRef.current!;
     dialog.close();
     dialog.showModal();
     setMaximized(true);
+    restoreScroll();
   }
   function minimize() {
     if (maximized) restore();
@@ -69,8 +82,8 @@ function RetroWindow({ title, className, children }: {
   }
 
   return (
-    <div className={`${className} retro-window`}>
-      <dialog ref={shellRef} className={`window-shell${maximized ? " is-maximized" : ""}`}
+    <div className={`${className} retro-window${minimized ? " is-minimized" : ""}`}>
+      <dialog ref={shellRef} open className={`window-shell${maximized ? " is-maximized" : ""}${minimized ? " is-minimized" : ""}`}
         aria-label={title} onCancel={event => { event.preventDefault(); restore(); }}>
         <div className="titlebar">
           <span>{title}</span>
@@ -78,7 +91,7 @@ function RetroWindow({ title, className, children }: {
             <button type="button" aria-label={`${minimized ? "Restaurar" : "Minimizar"} ${title}`} aria-expanded={!minimized} onClick={minimize}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 12.5h10" /></svg>
             </button>
-            <button type="button" ref={maximizeRef} aria-label={`${maximized ? "Sair da tela cheia de" : "Maximizar"} ${title}`} onClick={maximize}>
+            <button type="button" ref={maximizeRef} aria-label={`${maximized ? "Sair da tela cheia de" : minimized ? "Restaurar" : "Maximizar"} ${title}`} onClick={maximize}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="3.5" width="9" height="9" /></svg>
             </button>
             <button type="button" className="window-close" aria-label={`Fechar ${title}`} onClick={() => {
@@ -89,7 +102,7 @@ function RetroWindow({ title, className, children }: {
             </button>
           </div>
         </div>
-        <div className="window-content" hidden={minimized}>{children}</div>
+        <div className="window-content" inert={minimized}>{children}</div>
       </dialog>
 
     </div>
@@ -395,12 +408,10 @@ function ContactForm() {
 function App() {
   const { showReminder, closeReminder } = useAwayReminder();
   useEffect(() => {
-    const section = document.getElementById(window.location.hash.slice(1));
-    if (section) {
-      document.documentElement.style.scrollBehavior = "auto";
-      section.scrollIntoView();
-      document.documentElement.style.removeProperty("scroll-behavior");
-    }
+    document.documentElement.style.scrollBehavior = "auto";
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+    window.scrollTo(0, 0);
+    document.documentElement.style.removeProperty("scroll-behavior");
   }, []);
   return (
     <div id="inicio" className="site">
@@ -577,7 +588,7 @@ function App() {
             <a className="email-link" href={`mailto:${profile.email}`} target="_blank" rel="noopener noreferrer">
               {profile.email}
             </a>
-            <p className="phone"><External href={whatsappUrl}>{profile.phone} · WhatsApp ↗</External></p>
+            <p className="phone"><External href={whatsappUrl}>{profile.phone} / WhatsApp ↗</External></p>
             <div className="contact-links">
               <External href={profile.github}>GitHub ↗</External>
               <External href={profile.linkedin}>LinkedIn ↗</External>

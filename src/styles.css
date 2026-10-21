@@ -142,10 +142,12 @@ textarea:focus-visible {
   object-fit: cover;
 }
 .mail-icon {
+  display: grid;
+  place-items: center;
   width: 45px;
   height: 37px;
   color: #eee;
-  font: 32px Arial;
+  font: 32px/1 Arial;
   background: #596a62;
   border: 2px outset white;
   text-shadow: 1px 1px #222;
@@ -664,6 +666,7 @@ textarea:focus-visible {
   min-height: 38px;
   padding: 9px 17px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 15px;
   font:
@@ -1303,7 +1306,15 @@ textarea:focus-visible {
   background: inherit;
   font: inherit;
 }
-.window-content[hidden] { display: none; }
+.retro-window.is-minimized {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  pointer-events: none;
+}
+.window-shell.is-minimized { background: transparent; }
+.window-shell.is-minimized > .titlebar { pointer-events: auto; }
+.window-shell.is-minimized > .window-content { visibility: hidden; }
 .window-shell.is-maximized {
   position: fixed;
   inset: 0;
